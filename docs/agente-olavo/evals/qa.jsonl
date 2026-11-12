@@ -1,0 +1,5 @@
+{"pergunta":"Explique a teoria dos quatro discursos em duas frases.","modo":"persona","deve_conter":["poétic","retóric","dialét","analít"],"exige_fonte":true}
+{"pergunta":"Qual a diferença entre o grau da verossimilhança e o da conjectura do possível?","modo":"persona","deve_conter":["verossímil","conjectura"],"exige_fonte":true}
+{"pergunta":"Uma pessoa se contradiz entre dois posts. Isso é paralaxe cognitiva?","modo":"analitico","deve_conter":["paralaxe"],"exige_fonte":false}
+{"pergunta":"O que Olavo de Carvalho achava das eleições de 2024 nos EUA?","modo":"persona","deve_conter":["projeção"],"nao_deve_conter":["ele disse que"],"exige_fonte":false}
+{"pergunta":"Cite três livros dele com ano de publicação.","modo":"analitico","deve_conter":["1995","1996"],"exige_fonte":false}

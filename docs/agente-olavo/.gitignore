@@ -1,0 +1,6 @@
+.env
+.index/
+corpus/
+!exemplo-corpus/
+__pycache__/
+*.pyc

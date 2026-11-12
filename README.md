@@ -343,6 +343,7 @@ awesome-free-llm-apis/
 │   ├── claude-code.md
 │   ├── cursor.md
 │   └── codex.md
+├── docs/agente-olavo/      ← Step-by-step build of a persona agent (RAG + evals)
 └── LICENSE                 ← MIT
 ```
 

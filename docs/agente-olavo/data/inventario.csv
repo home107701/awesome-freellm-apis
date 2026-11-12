@@ -1,0 +1,14 @@
+titulo,tipo,ano,url,licenca,status,notas
+"O Jardim das Aflições",livro,1995,,proprietario,a_obter,"obra central; Vide 2019 com posfácio inédito"
+"Aristóteles em Nova Perspectiva",livro,1996,,proprietario,a_obter,"teoria dos quatro discursos"
+"O Imbecil Coletivo",livro,1996,,proprietario,a_obter,"ensaística polêmica"
+"O Imbecil Coletivo II",livro,1998,,proprietario,a_obter,
+"A Nova Era e a Revolução Cultural",livro,1994,,proprietario,a_obter,"Capra e Gramsci"
+"O Mínimo que Você Precisa Saber para Não Ser um Idiota",livro,2013,,proprietario,a_obter,"coletânea de artigos"
+"Inteligência e Verdade",apostila,1994,,proprietario,a_obter,"graus de certeza"
+"Ser e Conhecer",apostila,,,proprietario,a_obter,"método"
+"Curso Online de Filosofia - aulas 1-293 (transcrições)",transcricao,2023,https://archive.org/details/curso-online-de-filosofia-aulas-1-293-olavo-de-carvalho_202311,verificar,a_verificar,"conferir licença declarada no item"
+"Curso Online de Filosofia - áudios 1-585",audio,,https://archive.org/,verificar,a_verificar,"buscar coleção COFemAudio"
+"Transcrições COF (osescribas)",transcricao,,https://github.com/osescribas/cof,verificar,a_verificar,"conferir licença do repositório"
+"Artigos olavodecarvalho.org",artigo,,https://olavodecarvalho.org/,verificar,a_obter,"listar por data; trafilatura"
+"Jardim das Aflições (documentário)",video,2017,,proprietario,opcional,"uso de citação curta"
