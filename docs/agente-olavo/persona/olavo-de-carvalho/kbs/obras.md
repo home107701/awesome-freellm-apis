@@ -60,6 +60,26 @@ Santos).
 - **Wayback Machine** — versões antigas de olavodecarvalho.org e apostilas (ex.:
   "As 12 camadas da personalidade").
 
+## Estado do acervo em nov/2025 (verificado)
+
+- **`olavodecarvalho.org` está comprometido**: serve spam de loja
+  (`mall.carlisgrove.com`). Só o espelho do Wayback preserva os textos.
+- O caminho antigo `/apostilas/*.htm` **deixou de existir** na migração para
+  WordPress; as capturas até ~2016 ainda têm o conteúdo integral.
+- **GitHub `osescribas/cof`**: 257 aulas do COF transcritas e revisadas,
+  licença **CC0-1.0** — a melhor fonte textual livre.
+- **Internet Archive**: `COFemAudio` (585 áudios), transcrições 1–293 em PDF.
+- **YouTube oficial** (`@opropriolavodecarvalho`): 1,2 mi de inscritos,
+  ~1,3 mil vídeos, ~97 mi de visualizações; canal póstumo "in memoriam".
+- Datas e volumes de circulação: *O Mínimo...* + *O Imbecil Coletivo* somaram
+  mais de 400 mil exemplares entre 2013 e 2019.
+
+## Onde o agente NÃO deve buscar
+
+Resumos de terceiros, canais de fã, cortes com título sensacionalista, teses
+acadêmicas *sobre* ele e cobertura jornalística. Indexar isso faz o agente
+atribuir ao autor as palavras do comentarista — o erro nº 1 de personas.
+
 ## Regra de citação do agente
 
 - Citar livro: título + ano (e edição quando relevante).

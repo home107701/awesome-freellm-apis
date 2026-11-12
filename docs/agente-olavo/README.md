@@ -98,13 +98,23 @@ Monte uma planilha (`data/inventario.csv`) com colunas:
 
 | Fonte | O que rende | Observações práticas |
 |---|---|---|
-| Livros (Vide, Topbooks, Record, Instituto de Artes Liberais) | doutrina sistemática: *O Jardim das Aflições*, *Aristóteles em Nova Perspectiva*, *O Imbecil Coletivo* I e II, *A Nova Era e a Revolução Cultural*, *O Mínimo que Você Precisa Saber...*, *O Futuro do Pensamento Brasileiro*, *A Dialética Simbólica*, *A Filosofia e seu Inverso*; apostilas *Inteligência e Verdade*, *Ser e Conhecer* | são a **espinha dorsal**. Comece aqui. Digitalize só o que você possui; OCR de livro comercial é uso privado. |
-| olavodecarvalho.org | artigos, capítulos inteiros liberados, resenhas | páginas estáveis, fáceis de extrair; inclua data |
-| Internet Archive | *Curso Online de Filosofia, aulas 1–293* transcritas em PDF; áudios do COF 1–585 | verifique item a item a licença declarada antes de redistribuir |
-| GitHub `osescribas/cof` | transcrições colaborativas do COF | confira a licença do repositório |
-| YouTube | aulas, entrevistas, documentário *Jardim das Aflições* (2017), cortes de terceiros | **maior volume, maior risco e menor densidade**. Priorize autoria própria (canal dele/aulas) e entrevistas longas; cortes de fã são ruim sinal de qualidade de transcrição e de contexto |
-| Seminário de Filosofia (COF pago) | 585 aulas, centenas de apostilas | assinatura dá acesso; usar o material dentro dos termos de uso |
-| Jornais e revistas (anos 1980–2010) | polêmica, crítica cultural | recorte e OCR; muitas colunas estão em arquivos online |
+| **GitHub `osescribas/cof`** | 257 aulas do COF já revisadas + ~330 pendentes, **licença CC0-1.0** | **comece por aqui**: é o melhor custo/benefício de todo o acervo (texto limpo, domínio público, ~110 KB por aula) |
+| **Internet Archive `COFemAudio`** | áudios das 585 aulas do COF (mp3/aac) + transcrições 1–293 em PDF | verifique item a item a licença antes de redistribuir |
+| Livros (Vide, Topbooks, Record, Instituto de Artes Liberais) | doutrina sistemática: *O Jardim das Aflições*, *Aristóteles em Nova Perspectiva*, *O Imbecil Coletivo* I e II, *A Nova Era e a Revolução Cultural*, *O Mínimo que Você Precisa Saber...*, *O Futuro do Pensamento Brasileiro*, *A Dialética Simbólica*, *A Filosofia e seu Inverso* | são a **espinha dorsal**. Digitalize só o que você possui; OCR de livro comercial é uso privado. |
+| **`olavodecarvalho.org` — via Wayback Machine** | ~900 artigos semanais (1998–2016), apostilas do Seminário, trechos oficiais de livro | ⚠️ **o domínio está comprometido**: hoje serve spam de loja. Só existe em capturas do Wayback e espelhos. Use `data/artigos.csv`, que já aponta para os snapshots |
+| YouTube | aulas, entrevistas, documentário *Jardim das Aflições* (2017), cortes | **maior volume, maior risco, menor densidade**. Canal oficial: 1,2 mi inscritos, ~1,3 mil vídeos, ~97 mi views. Priorize autoria própria (palestras, aulas integrais) |
+| Seminário de Filosofia (COF pago) | 585 aulas, centenas de apostilas, guias de estudo | assinatura dá acesso; respeite os termos de uso |
+| Jornais e revistas (1980–2016) | *Diário do Comércio* (coluna semanal), *O Globo*, *Folha*, *Época*, *Bravo!* | muitas colunas estão espelhadas no site antigo; recorte e OCR |
+
+**Números verificados do acervo:** 23 livros de autoria + 32 vols. da coleção
+*História Essencial da Filosofia*; ~900 artigos semanais; 585 aulas do COF
+(07/03/2009 a 01/01/2022); 257 transcrições revisadas em CC0.
+
+A curadoria completa — **o que é popular x o que é relevante, item por item,
+com alcance medido** — está em [`data/curadoria.md`](data/curadoria.md). Resumo:
+os vídeos mais vistos são entrevistas e cortes (1,8 mi e 730 mil views); os
+textos mais densos são as apostilas de método e os artigos de 2012–2015. Não são
+a mesma lista, e o agente precisa das duas por motivos diferentes.
 
 **Regra de ouro da curadoria:** para cada documento, registre *tipo* e *qualidade
 da transcrição*. Um corpus onde 60% é corte de vídeo ruidoso gera um agente que
@@ -125,17 +135,30 @@ O gargalo técnico. Três pipelines, já implementados neste repositório:
 ```bash
 cd docs/agente-olavo
 
-# A) livros e apostilas (PDF, EPUB, DOCX) -> corpus/livros/*.txt
+# A) O caminho mais rápido: 257 aulas do COF já transcritas (CC0)
+python3 scripts/baixar_acervo.py --fonte cof-github
+python3 -m agente_olavo ingest          # ~28 MB de texto, sem GPU, sem API
+
+# B) Artigos, apostilas e trechos de livro do site oficial (via Wayback)
+python3 scripts/baixar_acervo.py --fonte wayback --prioridade P0
+#   se a rede bloquear o Wayback, o script gera data/baixar-wayback.sh:
+#   rode-o e depois:
+python3 scripts/montar_corpus.py --somente sites
+
+# C) Livros e apostilas em PDF/EPUB/DOCX -> corpus/livros/*.txt
 #    pré-requisitos: apt install poppler-utils pandoc tesseract-ocr-por
 python3 scripts/montar_corpus.py --somente livros
 
-# B) artigos de sites, a partir de um CSV (url,titulo,data,veiculo)
-python3 scripts/montar_corpus.py --somente sites --delay 2
-
-# C) YouTube -> áudio -> transcrição
-./scripts/01_baixar_youtube.sh "https://www.youtube.com/@canal" midia/
+# D) Áudio de aulas específicas do Archive -> Whisper
+python3 scripts/baixar_acervo.py --fonte cof-audio --aulas 1 147 219
 python3 scripts/montar_corpus.py --somente audio --whisper local   # ou --whisper groq
 ```
+
+> **Aviso de infraestrutura (nov/2025):** `olavodecarvalho.org` está servindo
+> spam de loja e o caminho `/apostilas/*.htm` morreu na migração para WordPress.
+> O acervo textual só existe hoje em capturas do Wayback e espelhos — por isso
+> todos os links de `data/artigos.csv` já apontam para snapshots, não para o
+> domínio. Não perca tempo tentando o site original.
 
 ### Escolhendo a transcrição
 
@@ -167,13 +190,15 @@ repetidas 20 vezes, corte a aula.
 Porque o agente cita `[F#]` a partir do *título + tipo + caminho*: sem cabeçalho,
 todas as fontes viram "artigo 12".
 
-**Meta de volume por fase:**
+**Meta de volume por fase** (medida, não estimada):
 
-| Estágio | Volume | Para quê |
-|---|---|---|
-| protótipo | 300 mil caracteres (~3 livros) | validar pipeline |
-| útil | 3–6 milhões de caracteres | responder sobre a obra toda |
-| robusto | 15–40 milhões | cobrir COF + artigos + polêmicas |
+| Estágio | Volume | O que entra | Para quê |
+|---|---|---|---|
+| protótipo | ~200 mil caracteres | 2 aulas do COF (209 chunks) | validar o pipeline em 1 minuto |
+| útil | ~28 MB | 257 aulas do COF revisadas (CC0) | responder sobre a obra ensaística e o método |
+| robusto | 45–60 MB | + artigos 1998–2016 + apostilas + trechos de livro + P0 de vídeo | cobrir a obra toda, das polêmicas à doutrina |
+
+Ao passar de ~50 MB, ligue `RETRIEVAL_MODE=hybrid` com embeddings.
 
 Acima de ~50 milhões de caracteres, o BM25 puro começa a perder precisão —
 é o momento de ligar `RETRIEVAL_MODE=hybrid` com embeddings.
@@ -431,10 +456,15 @@ inferência) e não silenciosas.
 
 | Semana | Objetivo | Entregável | Tempo/dia |
 |---|---|---|---|
-| 1 | Pipeline de ponta a ponta funcionando com corpus pequeno | 3 livros + 20 artigos em `.txt`, índice, `ask` respondendo com `[F#]` | 1–2 h |
-| 2 | Volume e qualidade | +30 aulas transcritas (Whisper), limpeza, cabeçalhos normalizados | 2 h (GPU) |
+| 1 | Pipeline de ponta a ponta, **sem GPU** | `baixar_acervo.py --fonte cof-github` + 20 artigos P0 do Wayback + índice + `ask` com `[F#]` | 1 h |
+| 2 | Volume e qualidade | 257 aulas do COF indexadas + apostilas de método; dedupe e cabeçalhos conferidos | 1 h |
 | 3 | Doutrina e estilo | KBs revisados lendo os trechos-fonte, 5 novos exemplos few-shot, primeira rodada de eval | 2 h |
 | 4 | Produto e limites | interface escolhida, avisos legais, rubrica de estilo preenchida, 20 casos de eval passando | 1–2 h |
+
+> A versão anterior deste roteiro pressupunha transcrever vídeo do YouTube na
+> semana 2. **Não faça isso primeiro**: as 257 aulas já transcritas em CC0 dão
+> mais texto, mais limpo, em minutos. Whisper fica para o que só existe em áudio
+> (entrevistas, palestras, True Outspeak).
 
 **Sinais de que está dando errado (e o que fazer):**
 
@@ -460,7 +490,14 @@ docs/agente-olavo/
 │   ├── SYSTEM.md                    ← contrato de operação do agente
 │   ├── kbs/                         ← doutrina curada (6 arquivos)
 │   └── style/                       ← guia de estilo + exemplos few-shot
+├── data/                            ← CURADORIA (o mapa do acervo)
+│   ├── curadoria.md                 ← popular x relevante, com alcance medido
+│   ├── artigos.csv                  ← 100+ textos: URL, snapshot, prioridade
+│   ├── youtube.csv                  ← vídeos por função (fonte vs comentário)
+│   ├── cof-indice.csv               ← aulas-chave do COF e para que servem
+│   └── inventario.csv               ← checklist de aquisição/licença
 ├── scripts/
+│   ├── baixar_acervo.py             ← COF (GitHub CC0) + Wayback + áudio
 │   ├── montar_corpus.py             ← livros / sites / áudio -> corpus/*.txt
 │   ├── 01_baixar_youtube.sh         ← yt-dlp
 │   ├── 02_transcrever.sh            ← Whisper local ou Groq
@@ -481,6 +518,7 @@ docs/agente-olavo/
 ## Checklist final
 
 - [ ] Escopo escrito: 10 perguntas que deve acertar, 5 que deve recusar.
+- [ ] Curadoria aplicada: P0 do COF (CC0) + P0 do Wayback indexados.
 - [ ] Corpus em `.txt` com cabeçalho padronizado (`título`, `fonte`, `ano`).
 - [ ] Nenhum texto *sobre* ele misturado ao texto *dele*.
 - [ ] Índice construído; `search` retorna trechos que você reconhece como reais.

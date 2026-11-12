@@ -159,9 +159,66 @@ def _permitido(url: str, cache: dict) -> bool:
         return True
 
 
+def _html_para_texto(html: str) -> str:
+    """Extração de texto sem dependências (fallback do trafilatura)."""
+    html = re.sub(r"(?is)<(script|style|noscript|nav|footer)[^>]*>.*?</\1>", " ", html)
+    html = re.sub(r"(?is)<br\s*/?>|</p>|</div>|</h[1-6]>", "\n", html)
+    html = re.sub(r"(?s)<[^>]+>", " ", html)
+    import html as h  # noqa: PLC0415
+
+    texto = h.unescape(html)
+    texto = re.sub(r"[ \t\xa0]+", " ", texto)
+    texto = re.sub(r"\n\s*\n\s*\n+", "\n\n", texto)
+    return "\n".join(l.strip() for l in texto.splitlines()).strip()
+
+
+def processar_htmls_baixados() -> None:
+    """Converte `corpus/_raw/*.html` (baixados à parte, ex.: pelo wget) em texto.
+
+    O Wayback serve a página original em `id_`, então dá para extrair o corpo
+    do artigo. Se `trafilatura` estiver instalada, usa; senão cai no parser
+    simples — suficiente para páginas .htm dos anos 2000, que são HTML puro.
+    """
+    origem = CORPUS / "_raw"
+    if not origem.exists():
+        return
+    arquivos = sorted(origem.glob("*.htm*"))
+    if not arquivos:
+        return
+    log(f"[html] {len(arquivos)} arquivos em corpus/_raw")
+    destino = CORPUS / "artigos"
+    destino.mkdir(parents=True, exist_ok=True)
+    try:
+        import trafilatura  # noqa: PLC0415
+
+        usar_trafilatura = True
+    except ImportError:
+        usar_trafilatura = False
+    for arq in arquivos:
+        saida = destino / (arq.stem + ".txt")
+        if saida.exists() and saida.stat().st_size > 800:
+            continue
+        bruto = arq.read_text("utf-8", errors="replace")
+        texto = ""
+        if usar_trafilatura:
+            texto = trafilatura.extract(bruto, favor_recall=True) or ""
+        if len(texto) < 600:
+            texto = _html_para_texto(bruto)
+        if len(texto) < 600:
+            log(f"[html] ! texto curto: {arq.name}")
+            continue
+        saida.write_text(f"# {arq.stem}\n# fonte: web.archive.org (espelho)\n\n{texto}", "utf-8")
+        log(f"[html] ok {saida.name} ({len(texto)} chars)")
+
+
 def extrair_sites(limite: int = 0, delay: float = 1.5) -> None:
-    import requests
-    import trafilatura
+    processar_htmls_baixados()
+    try:
+        import requests
+        import trafilatura
+    except ImportError:
+        log("[sites] requests/trafilatura ausentes — só processei corpus/_raw")
+        return
 
     destino = CORPUS / "artigos"
     destino.mkdir(parents=True, exist_ok=True)
